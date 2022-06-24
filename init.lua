@@ -1,1 +1,1 @@
-require "plugin.lua"
+require "plugins"
