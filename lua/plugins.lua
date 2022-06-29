@@ -18,6 +18,7 @@ return require('packer').startup(function()
   use { 'nvim-treesitter/nvim-treesitter', run = ':TSUpdate' }
   use 'lewis6991/gitsigns.nvim'
   use {'dracula/vim', as = 'dracula'}
-
+  use 'nvim-telescope/telescope.nvim'
+  use {'nvim-telescope/telescope-fzf-native.nvim', run = 'make' }
 end)
 

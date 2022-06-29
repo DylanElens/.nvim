@@ -51,7 +51,7 @@ require('lspconfig')['rust_analyzer'].setup{
 }
 require('lspconfig')['volar'].setup{
     on_attach = on_attach,
-    flags = lsp_flags,
+    flags ='--jsx',
 }
 require('lspconfig')['phpactor'].setup{
     on_attach = on_attach,
