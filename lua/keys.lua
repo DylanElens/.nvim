@@ -5,3 +5,5 @@ vim.api.nvim_set_keymap("n", "<leader>fw", "<cmd>lua require('telescope.builtin'
 vim.api.nvim_set_keymap("n", "<leader>fb", "<cmd>lua require('telescope.builtin').buffers()<cr>", {})
 vim.api.nvim_set_keymap("n", "<leader>fh", "<cmd>lua require('telescope.builtin').help_tags()<cr>", {})
 
+vim.api.nvim_set_keymap("n", "<Left>", "<cmd>vertical resize +10<cr>", {})
+

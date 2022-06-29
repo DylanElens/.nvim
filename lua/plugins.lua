@@ -15,10 +15,14 @@ return require('packer').startup(function()
 
   use {'tpope/vim-dispatch', opt = true, cmd = {'Dispatch', 'Make', 'Focus', 'Start'}}
   use {'andymass/vim-matchup', event = 'VimEnter'}
-  use { 'nvim-treesitter/nvim-treesitter', run = ':TSUpdate' }
-  use 'lewis6991/gitsigns.nvim'
+  use { 'nvim-treesitter/nvim-treesitter'}
+  use {'lewis6991/gitsigns.nvim',config = function() require('gitsigns').setup()end}
   use {'dracula/vim', as = 'dracula'}
   use 'nvim-telescope/telescope.nvim'
   use {'nvim-telescope/telescope-fzf-native.nvim', run = 'make' }
+  use { "ellisonleao/gruvbox.nvim" }
+  use 'kyazdani42/nvim-web-devicons'
+  use { 'numToStr/Comment.nvim', config = function() require('Comment').setup() end }
+  use 'mrjones2014/smart-splits.nvim'
 end)
 
