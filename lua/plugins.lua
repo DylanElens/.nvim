@@ -25,5 +25,7 @@ return require('packer').startup(function()
   use { 'numToStr/Comment.nvim', config = function() require('Comment').setup() end }
   use 'mrjones2014/smart-splits.nvim'
   use 'ThePrimeagen/harpoon'
+  use {'nvim-lualine/lualine.nvim', requires = { 'kyazdani42/nvim-web-devicons', opt = true }
+}
 end)
 

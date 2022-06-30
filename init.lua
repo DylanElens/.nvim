@@ -7,4 +7,5 @@ require "telescopes"
 require "keys"
 require "colorscheme"
 require "smartsplits"
+require "bar"
 

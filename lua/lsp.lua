@@ -32,6 +32,7 @@ local on_attach = function(client, bufnr)
   vim.keymap.set('n', '<space>ca', vim.lsp.buf.code_action, bufopts)
   vim.keymap.set('n', 'gr', vim.lsp.buf.references, bufopts)
   vim.keymap.set('n', '<space>lf', vim.lsp.buf.formatting, bufopts)
+  vim.keymap.set('n', 'gl', function() vim.diagnostic.open_float() end, bufopts)
 end
 
 local lsp_flags = {
