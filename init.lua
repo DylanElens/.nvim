@@ -8,4 +8,4 @@ require "keys"
 require "colorscheme"
 require "smartsplits"
 require "bar"
-
+require "toggleterminal"
