@@ -27,5 +27,6 @@ return require('packer').startup(function()
   use 'ThePrimeagen/harpoon'
   use {'nvim-lualine/lualine.nvim', requires = { 'kyazdani42/nvim-web-devicons', opt = true }}
 	use({ "akinsho/toggleterm.nvim", commit = "aaeed9e02167c5e8f00f25156895a6fd95403af8" })
+  use 'github/copilot.vim'
 end)
 
