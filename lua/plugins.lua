@@ -5,6 +5,7 @@ return require('packer').startup(function()
   use 'nvim-lua/plenary.nvim'
   use 'jose-elias-alvarez/null-ls.nvim'
 
+  use({ "kylechui/nvim-surround", tag = "*", config = function() require("nvim-surround").setup({}) end })
   use 'hrsh7th/cmp-nvim-lsp'
   use 'hrsh7th/cmp-buffer'
   use 'hrsh7th/cmp-path'
@@ -12,6 +13,10 @@ return require('packer').startup(function()
   use 'hrsh7th/nvim-cmp'
   use 'L3MON4D3/LuaSnip'
   use 'saadparwaiz1/cmp_luasnip'
+  use 'lervag/vimtex'
+  use 'kdheepak/lazygit.nvim'
+
+  use({ "iamcco/markdown-preview.nvim", run = "cd app && npm install", setup = function() vim.g.mkdp_filetypes = { "markdown" } end, ft = { "markdown" }, })
 
   use {'tpope/vim-dispatch', opt = true, cmd = {'Dispatch', 'Make', 'Focus', 'Start'}}
   use {'andymass/vim-matchup', event = 'VimEnter'}
@@ -28,5 +33,6 @@ return require('packer').startup(function()
   use {'nvim-lualine/lualine.nvim', requires = { 'kyazdani42/nvim-web-devicons', opt = true }}
 	use({ "akinsho/toggleterm.nvim", commit = "aaeed9e02167c5e8f00f25156895a6fd95403af8" })
   use 'github/copilot.vim'
+  use { 'sindrets/diffview.nvim' }
 end)
 

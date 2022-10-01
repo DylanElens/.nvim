@@ -21,3 +21,8 @@ vim.api.nvim_set_keymap("n", "<leader>td", "<cmd>lua _GOBANG_TOGGLE()<CR>", {})
 vim.api.nvim_set_keymap("n", "<leader>th", "<cmd>lua _HTOP_TOGGLE()<CR>", {})
 vim.api.nvim_set_keymap("n", "<leader>tn", "<cmd>lua _NODE_TOGGLE()<CR>", {})
 vim.api.nvim_set_keymap("n", "<leader>tp", "<cmd>lua _PYTHON_TOGGLE()<CR>", {})
+
+--Git stuff
+vim.api.nvim_set_keymap("n", "<leader>gd", "<cmd>DiffviewOpen<CR>", {})
+vim.api.nvim_set_keymap("n", "<leader>gc", "<cmd>DiffviewClose<CR>", {})
+vim.api.nvim_set_keymap("n", "<leader>gg", "<cmd>LazyGit<CR>", {})
