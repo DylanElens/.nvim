@@ -59,10 +59,6 @@ M.get_filename = function()
       file_icon_color = ""
     end
 
-    --attach a navic hightlight group to the icon
-    --local navic_text = vim.api.nvim_get_hl_by_name("NavicText", true)
-    --vim.api.nvim_set_hl(0, "Winbar", { fg = navic_text})
-
     return " " .. "%#" .. hl_group .. "#" .. file_icon .. "%*" .. " " .. "%#Winbar#" .. filename .. "%*"
   end
 end
