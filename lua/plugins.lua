@@ -19,7 +19,6 @@ return require('packer').startup(function()
   use({ "iamcco/markdown-preview.nvim", run = "cd app && npm install", setup = function() vim.g.mkdp_filetypes = { "markdown" } end, ft = { "markdown" }, })
 
   use {'tpope/vim-dispatch', opt = true, cmd = {'Dispatch', 'Make', 'Focus', 'Start'}}
-  use {'andymass/vim-matchup', event = 'VimEnter'}
   use { 'nvim-treesitter/nvim-treesitter'}
   use {'lewis6991/gitsigns.nvim',config = function() require('gitsigns').setup()end}
   use {'dracula/vim', as = 'dracula'}
@@ -33,6 +32,8 @@ return require('packer').startup(function()
   use {'nvim-lualine/lualine.nvim', requires = { 'kyazdani42/nvim-web-devicons', opt = true }}
 	use({ "akinsho/toggleterm.nvim", commit = "aaeed9e02167c5e8f00f25156895a6fd95403af8" })
   use 'github/copilot.vim'
+  use { 'fgheng/winbar.nvim' }
   use { 'sindrets/diffview.nvim' }
+
 end)
 

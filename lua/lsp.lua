@@ -1,5 +1,5 @@
 require("nvim-lsp-installer").setup({
-    automatic_installation = true, -- automatically detect which servers to install (based on which servers are set up via lspconfig)
+    automatic_installation = true, -- automatically detect which servers to install (based on which servers are set up via lspconfig)lsp
     ui = {
         icons = {
             server_installed = "✓",
@@ -49,7 +49,7 @@ null_ls.setup({
     on_attach = on_attach
 })
 
-local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
+local capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
 
 require('lspconfig')['pyright'].setup{
     on_attach = on_attach,
