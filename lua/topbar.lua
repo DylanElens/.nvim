@@ -26,6 +26,8 @@ require('winbar').setup({
         'Outline',
         'spectre_panel',
         'toggleterm',
+        'harpoon',
+        'lazygit',
         'qf',
     }
 })
