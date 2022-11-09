@@ -33,6 +33,7 @@ local options = {
   scrolloff = 8,                           -- is one of my fav
   guicursor = "i:block",
   sidescrolloff = 8,
+  laststatus = 3,
 }
 
 vim.opt.shortmess:append "c"
@@ -41,4 +42,9 @@ for k, v in pairs(options) do
   vim.opt[k] = v
 end
 
-
+vim.cmd [[
+  augroup YankHighlight
+    autocmd!
+    autocmd TextYankPost * silent! lua vim.highlight.on_yank()
+  augroup end
+]]
