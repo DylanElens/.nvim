@@ -86,6 +86,7 @@ local c = {
   ui_orange = "#E8AB53",
   ui2_orange = "#613214",
   ui_purple = "#B180D7",
+  gruvbox_red = "#fb4934",
 }
 
 local hl = vim.api.nvim_set_hl
@@ -119,3 +120,4 @@ hl(0, "NavicIconsOperator", { fg = c.fg, bg = "NONE" })
 hl(0, "NavicIconsTypeParameter", { fg = c.red, bg = "NONE" })
 hl(0, "NavicText", { fg = c.context, bg = "NONE" })
 hl(0, "NavicSeparator", { fg = c.context, bg = "NONE" })
+hl(0, "@tag", { fg = c.gruvbox_red, bg = "NONE" })
