@@ -67,12 +67,6 @@ require('lspconfig')['volar'].setup{
     capabilities = capabilities
 }
 
-require('lspconfig')['phpactor'].setup{
-    on_attach = on_attach,
-    flags = lsp_flags,
-    capabilities = capabilities
-}
-
 require('lspconfig')['intelephense'].setup{
     on_attach = on_attach,
     flags = lsp_flags,
@@ -81,5 +75,16 @@ require('lspconfig')['intelephense'].setup{
 require('lspconfig')['rust_analyzer'].setup{
     on_attach = on_attach,
     flags = lsp_flags,
+    capabilities = capabilities
+}
+require('lspconfig')['csharp_ls'].setup{
+    on_attach = on_attach,
+    flag = lsp_flags,
+    capabilities = capabilities
+}
+
+require('lspconfig')['omnisharp'].setup{
+    on_attach = on_attach,
+    flag = lsp_flags,
     capabilities = capabilities
 }

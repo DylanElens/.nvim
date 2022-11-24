@@ -39,12 +39,11 @@ local config = {
     -- Disable sections and component separators
     component_separators = '',
     section_separators = '',
-    theme = 'gruvbox'
-    ,
+    theme = 'ayu_mirage',
   },
   sections = {
     -- these are to remove the defaults
-    lualine_a = {},
+    lualine_a = {'mode'},
     lualine_b = {},
     lualine_y = {},
     lualine_z = {},
@@ -124,7 +123,7 @@ ins_left {
 ins_left {
   'filename',
   cond = conditions.buffer_not_empty,
-  color = { fg = colors.magenta, gui = 'bold' },
+  color = { fg = colors.cyan, gui = 'bold' },
 }
 
 ins_left { 'location' }
@@ -168,7 +167,7 @@ ins_left {
     return msg
   end,
   icon = ' LSP:',
-  color = { fg = '#ffffff', gui = 'bold' },
+  color = { gui = 'bold' },
 }
 
 -- Add components to right sections
@@ -182,8 +181,8 @@ ins_right {
 ins_right {
   'fileformat',
   fmt = string.upper,
-  icons_enabled = false, -- I think icons are cool but Eviline doesn't have them. sigh
-  color = { fg = colors.green, gui = 'bold' },
+  icons_enabled = true, -- I think icons are cool but Eviline doesn't have them. sigh
+  color = { gui = 'bold' },
 }
 
 ins_right {
