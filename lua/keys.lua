@@ -30,3 +30,17 @@ vim.api.nvim_set_keymap("n", "<leader>gg", "<cmd>LazyGit<CR>", {})
 vim.api.nvim_set_keymap("n", "<leader>gb", "<cmd>Gitsigns blame_line<CR>", {})
 vim.api.nvim_set_keymap("n", "<leader>ct", "<cmd>Copilot enable<CR>", {})
 vim.api.nvim_set_keymap("n", "<leader>cf", "<cmd>Copilot disable<CR>", {})
+
+--Debugging
+vim.api.nvim_set_keymap("n", "<leader>db", "<cmd>lua require'dap'.toggle_breakpoint()<CR>", {})
+vim.api.nvim_set_keymap("n", "<leader>dc", "<cmd>lua require'dap'.continue()<CR>", {})
+vim.api.nvim_set_keymap("n", "<leader>di", "<cmd>lua require'dap'.step_into()<CR>", {})
+vim.api.nvim_set_keymap("n", "<leader>do", "<cmd>lua require'dap'.step_over()<CR>", {})
+vim.api.nvim_set_keymap("n", "<leader>dr", "<cmd>lua require'dap'.repl.open()<CR>", {})
+vim.api.nvim_set_keymap("n", "<leader>dl", "<cmd>lua require'dap'.run_last()<CR>", {})
+vim.api.nvim_set_keymap("n", "<leader>du", "<cmd>lua require'dapui'.open()<CR>", {})
+vim.api.nvim_set_keymap("n", "<leader>dh", "<cmd>lua require'dapui'.eval(<expression>)<CR>", {})
+vim.api.nvim_set_keymap("v", "<leader>dh", "<cmd>lua require'dapui'.eval()<CR>", {})
+
+
+
