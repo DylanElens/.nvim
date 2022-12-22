@@ -32,7 +32,7 @@ return require('packer').startup(function()
     use 'ThePrimeagen/harpoon'
     use { 'nvim-lualine/lualine.nvim', requires = { 'kyazdani42/nvim-web-devicons', opt = true } }
     use({ "akinsho/toggleterm.nvim", commit = "aaeed9e02167c5e8f00f25156895a6fd95403af8" })
-    use 'github/copilot.vim'
+    use { "zbirenbaum/copilot.lua" }
     use { "SmiteshP/nvim-navic", requires = "neovim/nvim-lspconfig" }
     use { 'sindrets/diffview.nvim' }
     use 'martinsione/darkplus.nvim'
@@ -43,5 +43,5 @@ return require('packer').startup(function()
     use 'mfussenegger/nvim-dap-python'
     use 'aduros/ai.vim'
     use { "catppuccin/nvim", as = "catppuccin" }
-    use { "zbirenbaum/copilot-cmp", after = { "copilot.lua" } }
+    use {"zbirenbaum/copilot-cmp", after = { "copilot.lua" }, config = function () require("copilot_cmp").setup() end }
 end)
