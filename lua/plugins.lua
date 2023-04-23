@@ -3,7 +3,6 @@ return require('packer').startup(function()
     use "williamboman/nvim-lsp-installer"
     use "neovim/nvim-lspconfig"
     use 'nvim-lua/plenary.nvim'
-    use 'jose-elias-alvarez/null-ls.nvim'
 
     use({ "kylechui/nvim-surround", tag = "*", config = function() require("nvim-surround").setup({}) end })
     use 'hrsh7th/cmp-nvim-lsp'
@@ -15,9 +14,6 @@ return require('packer').startup(function()
     use 'saadparwaiz1/cmp_luasnip'
     use 'lervag/vimtex'
     use 'kdheepak/lazygit.nvim'
-
-    use({ "iamcco/markdown-preview.nvim", run = "cd app && npm install",
-        setup = function() vim.g.mkdp_filetypes = { "markdown" } end, ft = { "markdown" }, })
 
     use { 'tpope/vim-dispatch', opt = true, cmd = { 'Dispatch', 'Make', 'Focus', 'Start' } }
     use { 'nvim-treesitter/nvim-treesitter' }
@@ -39,9 +35,9 @@ return require('packer').startup(function()
     use "lunarvim/Onedarker.nvim"
     use 'mfussenegger/nvim-dap'
     use { "rcarriga/nvim-dap-ui", requires = { "mfussenegger/nvim-dap" } }
-    use 'nanotee/sqls.nvim'
     use 'mfussenegger/nvim-dap-python'
-    use 'aduros/ai.vim'
+    use { "williamboman/mason.nvim", run = ":MasonUpdate" }
     use { "catppuccin/nvim", as = "catppuccin" }
-    use {"zbirenbaum/copilot-cmp", after = { "copilot.lua" }, config = function () require("copilot_cmp").setup() end }
+    use "williamboman/mason-lspconfig.nvim"
+    use 'jose-elias-alvarez/null-ls.nvim'
 end)
