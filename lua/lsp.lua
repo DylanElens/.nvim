@@ -11,14 +11,16 @@ vim.keymap.set('n', '<space>q', vim.diagnostic.setloclist, opts)
 local on_attach = function(client, bufnr)
     vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
     if client.name ~= "null-ls" then
-        print(vim.inspect(client.name))
         navic.attach(client, bufnr)
     end
 
-    if client.name ~= "volar" then
-        vim.keymap.set('n', '<space>lf', function() vim.lsp.buf.format { async = true } end, opts)
-        navic.attach(client, bufnr)
+    if client.name ~= "tsserver" then
+        vim.keymap.set('n', '<space>lf', function()
+            vim.lsp.buf.format { async = true }
+        end, opts)
     end
+
+
     local bufopts = { noremap = true, silent = true, buffer = bufnr }
     vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, bufopts)
     vim.keymap.set('n', 'gd', vim.lsp.buf.definition, bufopts)
@@ -44,7 +46,7 @@ null_ls.setup({
     sources = {
         null_ls.builtins.diagnostics.eslint,
         null_ls.builtins.code_actions.eslint,
-        null_ls.builtins.formatting.eslint
+        null_ls.builtins.formatting.prettier
     },
     on_attach = on_attach
 })
@@ -68,6 +70,13 @@ require('lspconfig')['tsserver'].setup {
     flags = lsp_flags,
     capabilities = capabilities
 }
+
+require('lspconfig')['phpactor'].setup {
+    on_attach = on_attach,
+    flags = lsp_flags,
+    capabilities = capabilities
+}
+
 require('lspconfig')['rust_analyzer'].setup {
     on_attach = on_attach,
     flags = lsp_flags,
