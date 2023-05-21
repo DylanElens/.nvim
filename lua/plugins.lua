@@ -41,4 +41,5 @@ return require('packer').startup(function()
     use { "catppuccin/nvim", as = "catppuccin" }
     use "williamboman/mason-lspconfig.nvim"
     use 'jose-elias-alvarez/null-ls.nvim'
+    use 'jwalton512/vim-blade'
 end)
