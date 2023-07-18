@@ -11,10 +11,12 @@ vim.api.nvim_set_keymap("n", "<Left>", "<cmd>vertical resize +10<cr>", {})
 --harpoon
 vim.api.nvim_set_keymap("n", "<leader>h", "<cmd>lua require('harpoon.ui').toggle_quick_menu()<cr>", {})
 vim.api.nvim_set_keymap("n", "<leader>af", "<cmd>lua require('harpoon.mark').add_file()<cr>", {})
-vim.api.nvim_set_keymap("n", "<leader>q", "<cmd>lua require('harpoon.ui').nav_file(1)<cr>", {})
-vim.api.nvim_set_keymap("n", "<leader>w", "<cmd>lua require('harpoon.ui').nav_file(2)<cr>", {})
-vim.api.nvim_set_keymap("n", "<leader>e", "<cmd>lua require('harpoon.ui').nav_file(3)<cr>", {})
-vim.api.nvim_set_keymap("n", "<leader>r", "<cmd>lua require('harpoon.ui').nav_file(4)<cr>", {})
+vim.api.nvim_set_keymap("n", "<leader>1", "<cmd>lua require('harpoon.ui').nav_file(1)<cr>", {})
+vim.api.nvim_set_keymap("n", "<leader>2", "<cmd>lua require('harpoon.ui').nav_file(2)<cr>", {})
+vim.api.nvim_set_keymap("n", "<leader>3", "<cmd>lua require('harpoon.ui').nav_file(3)<cr>", {})
+vim.api.nvim_set_keymap("n", "<leader>4", "<cmd>lua require('harpoon.ui').nav_file(4)<cr>", {})
+vim.api.nvim_set_keymap("n", "<leader>5", "<cmd>lua require('harpoon.ui').nav_file(5)<cr>", {})
+vim.api.nvim_set_keymap("n", "<leader>6", "<cmd>lua require('harpoon.ui').nav_file(6)<cr>", {})
 
 --toggle terminal
 vim.api.nvim_set_keymap("n", "<leader>td", "<cmd>lua _GOBANG_TOGGLE()<CR>", {})
@@ -44,3 +46,5 @@ vim.api.nvim_set_keymap("v", "<leader>dh", "<cmd>lua require'dapui'.eval()<CR>",
 
 
 
+--tree
+vim.api.nvim_set_keymap("n", "<leader>e", "<cmd>NvimTreeToggle<cr>", {})

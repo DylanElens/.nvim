@@ -51,7 +51,8 @@
         "/home/dylan/.local/share/nvim/site/pack/packer/start/cmp_luasnip/after",
         "/home/dylan/.local/share/nvim/site/pack/packer/start/dracula/after",
         "/home/dylan/.local/share/nvim/site/pack/packer/start/vimtex/after",
-        "${3rd}/luassert/library"
+        "${3rd}/luassert/library",
+        "${3rd}/luv/library"
     ],
     "workspace.checkThirdParty": false
 }

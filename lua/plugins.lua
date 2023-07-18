@@ -28,7 +28,6 @@ return require('packer').startup(function()
     use 'ThePrimeagen/harpoon'
     use { 'nvim-lualine/lualine.nvim', requires = { 'kyazdani42/nvim-web-devicons', opt = true } }
     use({ "akinsho/toggleterm.nvim", commit = "aaeed9e02167c5e8f00f25156895a6fd95403af8" })
-    -- use { "zbirenbaum/copilot.lua" }
     use "github/copilot.vim"
     use { "SmiteshP/nvim-navic", requires = "neovim/nvim-lspconfig" }
     use { 'sindrets/diffview.nvim' }
@@ -42,4 +41,51 @@ return require('packer').startup(function()
     use "williamboman/mason-lspconfig.nvim"
     use 'jose-elias-alvarez/null-ls.nvim'
     use 'jwalton512/vim-blade'
+    use 'tpope/vim-dotenv'
+    use 'MunifTanjim/nui.nvim'
+    use 'nvim-tree/nvim-tree.lua'
+
+    use 'goolord/alpha-nvim'
+
+    use {
+        "rcarriga/nvim-notify",
+        config = function()
+            local notify = require("notify")
+            -- this for transparency
+            notify.setup({ background_colour = "#000000" })
+            -- this overwrites the vim notify function
+            vim.notify = notify.notify
+        end
+    }
+
+    use {
+        'adalessa/laravel.nvim',
+        requires = {
+            'nvim-telescope/telescope.nvim',
+            'tpope/vim-dotenv',
+            'MunifTanjim/nui.nvim',
+        },
+        cmd = { 'Sail', 'Artisan', 'Composer', 'Npm', 'Yarn', 'Laravel' },
+        keys = {
+            { 'n', '<leader>la', ':Laravel artisan<cr>', {
+                noremap = true,
+                silent = true
+            } },
+            { 'n', '<leader>lr', ':Laravel routes<cr>', {
+                noremap = true,
+                silent = true
+            } },
+            { 'v', '<leader>lt', '<cmd>lua require("laravel.tinker").send_to_tinker()<cr>',
+                {
+                    noremap = true,
+                    silent = true,
+                    description = "Laravel Application Routes"
+                } },
+        },
+        event = 'VimEnter',
+        config = function()
+            require('laravel').setup()
+            require('telescope').load_extension('laravel')
+        end,
+    }
 end)
