@@ -47,4 +47,4 @@ vim.api.nvim_set_keymap("v", "<leader>dh", "<cmd>lua require'dapui'.eval()<CR>",
 
 
 --tree
-vim.api.nvim_set_keymap("n", "<leader>e", "<cmd>NvimTreeToggle<cr>", {})
+vim.api.nvim_set_keymap("n", "<leader>e", "<cmd>NvimTreeFindFileToggle<cr>", {})
