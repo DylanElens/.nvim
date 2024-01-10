@@ -14,6 +14,16 @@ return require('packer').startup(function()
     use 'saadparwaiz1/cmp_luasnip'
     use 'lervag/vimtex'
     use 'kdheepak/lazygit.nvim'
+    -- Packer
+    use({
+        "crnvl96/lazydocker.nvim",
+        config = function()
+            require("lazydocker").setup()
+        end,
+        requires = {
+            "MunifTanjim/nui.nvim",
+        }
+    })
 
     use { 'tpope/vim-dispatch', opt = true, cmd = { 'Dispatch', 'Make', 'Focus', 'Start' } }
     use { 'nvim-treesitter/nvim-treesitter' }
@@ -44,19 +54,15 @@ return require('packer').startup(function()
     use 'tpope/vim-dotenv'
     use 'MunifTanjim/nui.nvim'
     use 'nvim-tree/nvim-tree.lua'
+    use 'folke/noice.nvim'
+    use 'jbyuki/instant.nvim'
+    use "luckasRanarison/tree-sitter-hypr"
+    use {
+        'Fymyte/rasi.vim',
+        ft = 'rasi',
+    }
 
     use 'goolord/alpha-nvim'
-
-    use {
-        "rcarriga/nvim-notify",
-        config = function()
-            local notify = require("notify")
-            -- this for transparency
-            notify.setup({ background_colour = "#000000" })
-            -- this overwrites the vim notify function
-            vim.notify = notify.notify
-        end
-    }
 
     use {
         'adalessa/laravel.nvim',

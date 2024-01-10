@@ -8,20 +8,30 @@ vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, opts)
 vim.keymap.set('n', ']d', vim.diagnostic.goto_next, opts)
 vim.keymap.set('n', '<space>q', vim.diagnostic.setloclist, opts)
 
+
 local on_attach = function(client, bufnr)
     vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
     if client.name ~= "null-ls" then
         navic.attach(client, bufnr)
     end
 
+    vim.keymap.set('n', '<space>lf', function()
+        vim.lsp.buf.format { async = true, noremap = true, silent = true, bufnr = bufnr, filter = function(lsp_client)
+            return
+                lsp_client.name ~= "tsserver"
+        end }
+    end, opts)
+
     if client.name ~= "tsserver" then
-        vim.keymap.set('n', '<space>lf', function()
-            vim.lsp.buf.format { async = true }
-        end, opts)
+        if client.server_capabilities.documentFormattingProvider then
+            vim.cmd(
+                "autocmd BufWritePre <buffer> lua vim.lsp.buf.format { async = true, noremap = true, silent = true, bufnr = bufnr, filter = function(lsp_client) return lsp_client.name ~= 'tsserver' end }")
+        end
     end
 
 
     local bufopts = { noremap = true, silent = true, buffer = bufnr }
+
     vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, bufopts)
     vim.keymap.set('n', 'gd', vim.lsp.buf.definition, bufopts)
     vim.keymap.set('n', 'gl', vim.lsp.buf.hover, bufopts)
@@ -44,9 +54,13 @@ local lsp_flags = {
 local null_ls = require("null-ls")
 null_ls.setup({
     sources = {
-        null_ls.builtins.diagnostics.eslint,
-        null_ls.builtins.code_actions.eslint,
-        null_ls.builtins.formatting.prettier
+        null_ls.builtins.diagnostics.eslint_d,
+        null_ls.builtins.code_actions.eslint_d,
+        null_ls.builtins.formatting.prettierd,
+        null_ls.builtins.formatting.autopep8,
+        -- null_ls.builtins.formatting.prettier.with {
+        --     disabled_filetypes = { 'javascript', 'javascriptreact', 'typescript', 'typescriptreact' },
+        -- },
     },
     on_attach = on_attach
 })
@@ -71,12 +85,6 @@ require('lspconfig')['tsserver'].setup {
     capabilities = capabilities
 }
 
-require('lspconfig')['phpactor'].setup {
-    on_attach = on_attach,
-    flags = lsp_flags,
-    capabilities = capabilities
-}
-
 require('lspconfig')['rust_analyzer'].setup {
     on_attach = on_attach,
     flags = lsp_flags,
@@ -90,6 +98,23 @@ require('lspconfig')['intelephense'].setup {
 }
 
 require('lspconfig')['yamlls'].setup {
+    on_attach = on_attach,
+    flags = lsp_flags,
+    capabilities = capabilities
+}
+
+require('lspconfig')['hls'].setup {
+    on_attach = on_attach,
+    flags = lsp_flags,
+    capabilities = capabilities
+}
+
+require('lspconfig')['bashls'].setup {
+    on_attach = on_attach,
+    flags = lsp_flags,
+    capabilities = capabilities
+}
+require('lspconfig')['tailwindcss'].setup {
     on_attach = on_attach,
     flags = lsp_flags,
     capabilities = capabilities
