@@ -18,11 +18,13 @@ local on_attach = function(client, bufnr)
     vim.keymap.set('n', '<space>lf', function()
         vim.lsp.buf.format { async = true, noremap = true, silent = true, bufnr = bufnr, filter = function(lsp_client)
             return
-                lsp_client.name ~= "tsserver"
+                lsp_client.name ~= "tsserver" or
+                lsp_client.name ~= "lua-language-server" or
+                lsp_client.name ~= "intelephense"
         end }
     end, opts)
 
-    if client.name ~= "tsserver" then
+    if client.name ~= "tsserver" or client.name ~= "lua-language-server" or client.name ~= "intelephense" then
         if client.server_capabilities.documentFormattingProvider then
             vim.cmd(
                 "autocmd BufWritePre <buffer> lua vim.lsp.buf.format { async = true, noremap = true, silent = true, bufnr = bufnr, filter = function(lsp_client) return lsp_client.name ~= 'tsserver' end }")
@@ -57,7 +59,9 @@ null_ls.setup({
         null_ls.builtins.diagnostics.eslint_d,
         null_ls.builtins.code_actions.eslint_d,
         null_ls.builtins.formatting.prettierd,
-        null_ls.builtins.formatting.autopep8,
+        -- null_ls.builtins.formatting.autopep8,
+        -- null_ls.builtins.formatting.phpstan,
+        -- null_ls.builtins.formatting.pint,
         -- null_ls.builtins.formatting.prettier.with {
         --     disabled_filetypes = { 'javascript', 'javascriptreact', 'typescript', 'typescriptreact' },
         -- },
@@ -120,7 +124,13 @@ require('lspconfig')['tailwindcss'].setup {
     capabilities = capabilities
 }
 
-require('lspconfig')['lua_ls'].setup {
+
+require('lspconfig')['clangd'].setup {
+    on_attach = on_attach,
+    flags = lsp_flags,
+    capabilities = capabilities
+}
+require('lspconfig')['lua-language-server'].setup {
     on_attach = on_attach,
     settings = {
         Lua = {
