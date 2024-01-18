@@ -1,152 +1,124 @@
-local navic = require("nvim-navic")
+-- Setup Mason and Mason LSP Config
 require("mason").setup()
 require("mason-lspconfig").setup()
 
+-- Setup nvim-navic
+local navic = require("nvim-navic")
+
+-- Keymap Options
 local opts = { noremap = true, silent = true }
-vim.keymap.set('n', '<space>e', vim.diagnostic.open_float, opts)
-vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, opts)
-vim.keymap.set('n', ']d', vim.diagnostic.goto_next, opts)
-vim.keymap.set('n', '<space>q', vim.diagnostic.setloclist, opts)
 
+-- Diagnostic keymaps
+vim.keymap.set("n", "<space>e", vim.diagnostic.open_float, opts)
+vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, opts)
+vim.keymap.set("n", "]d", vim.diagnostic.goto_next, opts)
+vim.keymap.set("n", "<space>q", vim.diagnostic.setloclist, opts)
 
+-- LSP on_attach function
 local on_attach = function(client, bufnr)
-    vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
-    if client.name ~= "null-ls" then
-        navic.attach(client, bufnr)
-    end
+	vim.api.nvim_buf_set_option(bufnr, "omnifunc", "v:lua.vim.lsp.omnifunc")
 
-    vim.keymap.set('n', '<space>lf', function()
-        vim.lsp.buf.format { async = true, noremap = true, silent = true, bufnr = bufnr, filter = function(lsp_client)
-            return
-                lsp_client.name ~= "tsserver" or
-                lsp_client.name ~= "lua-language-server" or
-                lsp_client.name ~= "intelephense"
-        end }
-    end, opts)
+	if client.name ~= "null-ls" then
+		navic.attach(client, bufnr)
+	end
 
-    if client.name ~= "tsserver" or client.name ~= "lua-language-server" or client.name ~= "intelephense" then
-        if client.server_capabilities.documentFormattingProvider then
-            vim.cmd(
-                "autocmd BufWritePre <buffer> lua vim.lsp.buf.format { async = true, noremap = true, silent = true, bufnr = bufnr, filter = function(lsp_client) return lsp_client.name ~= 'tsserver' end }")
-        end
-    end
+	local bufopts = { noremap = true, silent = true, buffer = bufnr }
 
-
-    local bufopts = { noremap = true, silent = true, buffer = bufnr }
-
-    vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, bufopts)
-    vim.keymap.set('n', 'gd', vim.lsp.buf.definition, bufopts)
-    vim.keymap.set('n', 'gl', vim.lsp.buf.hover, bufopts)
-    vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, bufopts)
-    vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, bufopts)
-    vim.keymap.set('n', '<space>wa', vim.lsp.buf.add_workspace_folder, bufopts)
-    vim.keymap.set('n', '<space>wr', vim.lsp.buf.remove_workspace_folder, bufopts)
-    vim.keymap.set('n', '<space>wl', function() print(vim.inspect(vim.lsp.buf.list_workspace_folders())) end, bufopts)
-    vim.keymap.set('n', '<space>D', vim.lsp.buf.type_definition, bufopts)
-    vim.keymap.set('n', '<space>rn', vim.lsp.buf.rename, bufopts)
-    vim.keymap.set('n', '<space>ca', vim.lsp.buf.code_action, bufopts)
-    vim.keymap.set('n', 'gr', vim.lsp.buf.references, bufopts)
-    vim.keymap.set('n', 'gl', function() vim.diagnostic.open_float() end, bufopts)
+	-- LSP keymaps
+	vim.keymap.set("n", "gD", vim.lsp.buf.declaration, bufopts)
+	vim.keymap.set("n", "gd", vim.lsp.buf.definition, bufopts)
+	vim.keymap.set("n", "gl", vim.lsp.buf.hover, bufopts)
+	vim.keymap.set("n", "gi", vim.lsp.buf.implementation, bufopts)
+	vim.keymap.set("n", "<C-k>", vim.lsp.buf.signature_help, bufopts)
+	vim.keymap.set("n", "<space>wa", vim.lsp.buf.add_workspace_folder, bufopts)
+	vim.keymap.set("n", "<space>wr", vim.lsp.buf.remove_workspace_folder, bufopts)
+	vim.keymap.set("n", "<space>wl", function()
+		print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
+	end, bufopts)
+	vim.keymap.set("n", "<space>D", vim.lsp.buf.type_definition, bufopts)
+	vim.keymap.set("n", "<space>rn", vim.lsp.buf.rename, bufopts)
+	vim.keymap.set("n", "<space>ca", vim.lsp.buf.code_action, bufopts)
+	vim.keymap.set("n", "gr", vim.lsp.buf.references, bufopts)
+	vim.keymap.set("n", "gl", function()
+		vim.diagnostic.open_float()
+	end, bufopts)
 end
 
+-- LSP flags
 local lsp_flags = {
-    debounce_text_changes = 150,
+	debounce_text_changes = 150,
 }
 
-local null_ls = require("null-ls")
-null_ls.setup({
-    sources = {
-        null_ls.builtins.diagnostics.eslint_d,
-        null_ls.builtins.code_actions.eslint_d,
-        null_ls.builtins.formatting.prettierd,
-        null_ls.builtins.formatting.prettierd.luaformatter
-        -- null_ls.builtins.formatting.autopep8,
-        -- null_ls.builtins.formatting.phpstan,
-        -- null_ls.builtins.formatting.pint,
-        -- null_ls.builtins.formatting.prettier.with {
-        --     disabled_filetypes = { 'javascript', 'javascriptreact', 'typescript', 'typescriptreact' },
-        -- },
-    },
-    on_attach = on_attach
+-- Linter Configuration
+local filetypes = { "javascript", "javascriptreact", "typescript", "typescriptreact" }
+local linter = { "eslint_d" }
+local ft_configs = {}
+
+for _, value in pairs(filetypes) do
+	ft_configs[value] = linter
+end
+
+require("lint").linters_by_ft = ft_configs
+
+-- Formatter Configuration
+require("conform").setup({
+	formatters_by_ft = {
+		javascript = { "prettierd" },
+		typescript = { "prettierd" },
+		typescriptreact = { "prettierd" },
+		lua = { "stylua" },
+	},
+	format_on_save = {
+		timeout_ms = 500,
+		lsp_fallback = false,
+	},
 })
 
-local capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
+-- Auto commands for linting
+vim.api.nvim_create_autocmd({ "BufWritePost", "BufEnter" }, {
+	callback = function()
+		require("lint").try_lint()
+	end,
+})
 
-require('lspconfig')['pyright'].setup {
-    on_attach = on_attach,
-    flags = lsp_flags,
-    capabilities = capabilities
-}
+-- Common capabilities for LSP servers
+local capabilities = require("cmp_nvim_lsp").default_capabilities(vim.lsp.protocol.make_client_capabilities())
 
-require('lspconfig')['volar'].setup {
-    on_attach = on_attach,
-    flags = lsp_flags,
-    capabilities = capabilities
+-- LSP server configurations
+local servers = {
+	"pyright",
+	"volar",
+	"tsserver",
+	"rust_analyzer",
+	"intelephense",
+	"yamlls",
+	"hls",
+	"bashls",
+	"tailwindcss",
+	"clangd",
 }
+for _, lsp in ipairs(servers) do
+	require("lspconfig")[lsp].setup({
+		on_attach = on_attach,
+		flags = lsp_flags,
+		capabilities = capabilities,
+	})
+end
 
-require('lspconfig')['tsserver'].setup {
-    on_attach = on_attach,
-    flags = lsp_flags,
-    capabilities = capabilities
-}
-
-require('lspconfig')['rust_analyzer'].setup {
-    on_attach = on_attach,
-    flags = lsp_flags,
-    capabilities = capabilities
-}
-
-require('lspconfig')['intelephense'].setup {
-    on_attach = on_attach,
-    flags = lsp_flags,
-    capabilities = capabilities
-}
-
-require('lspconfig')['yamlls'].setup {
-    on_attach = on_attach,
-    flags = lsp_flags,
-    capabilities = capabilities
-}
-
-require('lspconfig')['hls'].setup {
-    on_attach = on_attach,
-    flags = lsp_flags,
-    capabilities = capabilities
-}
-
-require('lspconfig')['bashls'].setup {
-    on_attach = on_attach,
-    flags = lsp_flags,
-    capabilities = capabilities
-}
-require('lspconfig')['tailwindcss'].setup {
-    on_attach = on_attach,
-    flags = lsp_flags,
-    capabilities = capabilities
-}
-
-
-require('lspconfig')['clangd'].setup {
-    on_attach = on_attach,
-    flags = lsp_flags,
-    capabilities = capabilities
-}
-require('lspconfig')['lua_ls'].setup {
-    on_attach = on_attach,
-    settings = {
-        Lua = {
-            runtime = {
-                version = 'LuaJIT',
-            },
-            diagnostics = {
-                globals = { 'vim' },
-            },
-            workspace = {
-                library = vim.api.nvim_get_runtime_file("", true),
-            },
-            telemetry = {
-                enable = false,
-            },
-        },
-    },
-}
+-- Special configuration for lua_ls
+require("lspconfig")["lua_ls"].setup({
+	on_attach = on_attach,
+	settings = {
+		Lua = {
+			diagnostics = {
+				globals = { "vim" },
+			},
+			workspace = {
+				library = vim.api.nvim_get_runtime_file("", true),
+			},
+			telemetry = {
+				enable = false,
+			},
+		},
+	},
+})
