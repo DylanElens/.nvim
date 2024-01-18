@@ -59,6 +59,7 @@ null_ls.setup({
         null_ls.builtins.diagnostics.eslint_d,
         null_ls.builtins.code_actions.eslint_d,
         null_ls.builtins.formatting.prettierd,
+        null_ls.builtins.formatting.prettierd.luaformatter
         -- null_ls.builtins.formatting.autopep8,
         -- null_ls.builtins.formatting.phpstan,
         -- null_ls.builtins.formatting.pint,
@@ -130,7 +131,7 @@ require('lspconfig')['clangd'].setup {
     flags = lsp_flags,
     capabilities = capabilities
 }
-require('lspconfig')['lua-language-server'].setup {
+require('lspconfig')['lua_ls'].setup {
     on_attach = on_attach,
     settings = {
         Lua = {
