@@ -26,7 +26,20 @@ local on_attach = function(client, bufnr)
 
 	-- LSP keymaps
 	vim.keymap.set("n", "gD", vim.lsp.buf.declaration, bufopts)
-	vim.keymap.set("n", "gd", vim.lsp.buf.definition, bufopts)
+	-- vim.keymap.set("n", "gd", vim.lsp.buf.definition, bufopts)
+	-- // I want to see a big preview
+	-- use telescope for definition if there are multiple results
+	-- decrease the size of the results window
+	vim.keymap.set("n", "gd", function()
+		require("telescope.builtin").lsp_definitions({
+			layout_strategy = "vertical",
+			layout_config = {
+				width = 0.9,
+				height = 0.9,
+				prompt_position = "top",
+			},
+		})
+	end, bufopts)
 	vim.keymap.set("n", "gl", vim.lsp.buf.hover, bufopts)
 	vim.keymap.set("n", "gi", vim.lsp.buf.implementation, bufopts)
 	vim.keymap.set("n", "<C-k>", vim.lsp.buf.signature_help, bufopts)
@@ -38,7 +51,17 @@ local on_attach = function(client, bufnr)
 	vim.keymap.set("n", "<space>D", vim.lsp.buf.type_definition, bufopts)
 	vim.keymap.set("n", "<space>rn", vim.lsp.buf.rename, bufopts)
 	vim.keymap.set("n", "<space>ca", vim.lsp.buf.code_action, bufopts)
-	vim.keymap.set("n", "gr", vim.lsp.buf.references, bufopts)
+	-- vim.keymap.set("n", "gr", vim.lsp.buf.references, bufopts)
+	vim.keymap.set("n", "gr", function()
+		require("telescope.builtin").lsp_references({
+			layout_strategy = "vertical",
+			layout_config = {
+				width = 0.9,
+				height = 0.9,
+				prompt_position = "top",
+			},
+		})
+	end, bufopts)
 	vim.keymap.set("n", "gl", function()
 		vim.diagnostic.open_float()
 	end, bufopts)
