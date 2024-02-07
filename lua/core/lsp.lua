@@ -1,21 +1,10 @@
 -- Setup Mason and Mason LSP Config
 require("mason").setup()
 require("mason-lspconfig").setup()
-require("neodev").setup({
-	-- add any options here, or leave empty to use the default settings
-})
-
--- Keymap Options
-local opts = { noremap = true, silent = true }
+require("neodev").setup()
 
 local navic = require("nvim-navic")
--- Diagnostic keymaps
-vim.keymap.set("n", "<space>e", vim.diagnostic.open_float, opts)
-vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, opts)
-vim.keymap.set("n", "]d", vim.diagnostic.goto_next, opts)
-vim.keymap.set("n", "<space>q", vim.diagnostic.setloclist, opts)
 
--- LSP on_attach function
 local on_attach = function(client, bufnr)
 	local bufopts = { noremap = true, silent = true, buffer = bufnr }
 
@@ -60,15 +49,12 @@ local on_attach = function(client, bufnr)
 	end, bufopts)
 end
 
--- LSP flags
 local lsp_flags = {
 	debounce_text_changes = 150,
 }
 
--- Common capabilities for LSP servers
 local capabilities = require("cmp_nvim_lsp").default_capabilities(vim.lsp.protocol.make_client_capabilities())
 
--- LSP server configurations
 local servers = {
 	"pyright",
 	"volar",
