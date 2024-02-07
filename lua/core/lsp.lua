@@ -5,9 +5,6 @@ require("neodev").setup({
 	-- add any options here, or leave empty to use the default settings
 })
 
--- Setup nvim-navic
-local navic = require("nvim-navic")
-
 -- Keymap Options
 local opts = { noremap = true, silent = true }
 
@@ -18,12 +15,8 @@ vim.keymap.set("n", "]d", vim.diagnostic.goto_next, opts)
 vim.keymap.set("n", "<space>q", vim.diagnostic.setloclist, opts)
 
 -- LSP on_attach function
-local on_attach = function(client, bufnr)
+local on_attach = function(_, bufnr)
 	vim.api.nvim_buf_set_option(bufnr, "omnifunc", "v:lua.vim.lsp.omnifunc")
-
-	if client.name ~= "null-ls" then
-		navic.attach(client, bufnr)
-	end
 
 	local bufopts = { noremap = true, silent = true, buffer = bufnr }
 	vim.keymap.set("n", "gD", vim.lsp.buf.declaration, bufopts)
@@ -68,46 +61,6 @@ local lsp_flags = {
 	debounce_text_changes = 150,
 }
 
--- Linter Configuration
-local jsFiles = { "javascript", "javascriptreact", "typescript", "typescriptreact" }
-local jsLinter = { "eslint_d" }
-local ft_configs = {}
-
-local phpFiles = { "php" }
-local phpLinter = { "phpstan" }
-
-for _, value in pairs(jsFiles) do
-	ft_configs[value] = jsLinter
-end
-
-for _, value in pairs(phpFiles) do
-	ft_configs[value] = phpLinter
-end
-
-require("lint").linters_by_ft = ft_configs
-
--- Formatter Configuration
-require("conform").setup({
-	formatters_by_ft = {
-		javascript = { "prettierd" },
-		typescript = { "prettierd" },
-		typescriptreact = { "prettierd" },
-		lua = { "stylua" },
-		php = { "pint" },
-	},
-	format_on_save = {
-		timeout_ms = 500,
-		lsp_fallback = false,
-	},
-})
-
--- Auto commands for linting
-vim.api.nvim_create_autocmd({ "BufWritePost", "BufEnter" }, {
-	callback = function()
-		require("lint").try_lint()
-	end,
-})
-
 -- Common capabilities for LSP servers
 local capabilities = require("cmp_nvim_lsp").default_capabilities(vim.lsp.protocol.make_client_capabilities())
 
@@ -124,6 +77,8 @@ local servers = {
 	"bashls",
 	"tailwindcss",
 	"clangd",
+	"jsonls",
+	"yamlls",
 }
 
 for _, lsp in ipairs(servers) do
