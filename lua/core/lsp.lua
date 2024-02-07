@@ -8,6 +8,7 @@ require("neodev").setup({
 -- Keymap Options
 local opts = { noremap = true, silent = true }
 
+local navic = require("nvim-navic")
 -- Diagnostic keymaps
 vim.keymap.set("n", "<space>e", vim.diagnostic.open_float, opts)
 vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, opts)
@@ -15,10 +16,13 @@ vim.keymap.set("n", "]d", vim.diagnostic.goto_next, opts)
 vim.keymap.set("n", "<space>q", vim.diagnostic.setloclist, opts)
 
 -- LSP on_attach function
-local on_attach = function(_, bufnr)
+local on_attach = function(client, bufnr)
+	local bufopts = { noremap = true, silent = true, buffer = bufnr }
+
 	vim.api.nvim_buf_set_option(bufnr, "omnifunc", "v:lua.vim.lsp.omnifunc")
 
-	local bufopts = { noremap = true, silent = true, buffer = bufnr }
+	navic.attach(client, bufnr)
+
 	vim.keymap.set("n", "gD", vim.lsp.buf.declaration, bufopts)
 	vim.keymap.set("n", "gd", function()
 		require("telescope.builtin").lsp_definitions({
