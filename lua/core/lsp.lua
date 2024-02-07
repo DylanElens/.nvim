@@ -1,6 +1,9 @@
 -- Setup Mason and Mason LSP Config
 require("mason").setup()
 require("mason-lspconfig").setup()
+require("neodev").setup({
+	-- add any options here, or leave empty to use the default settings
+})
 
 -- Setup nvim-navic
 local navic = require("nvim-navic")
@@ -23,13 +26,7 @@ local on_attach = function(client, bufnr)
 	end
 
 	local bufopts = { noremap = true, silent = true, buffer = bufnr }
-
-	-- LSP keymaps
 	vim.keymap.set("n", "gD", vim.lsp.buf.declaration, bufopts)
-	-- vim.keymap.set("n", "gd", vim.lsp.buf.definition, bufopts)
-	-- // I want to see a big preview
-	-- use telescope for definition if there are multiple results
-	-- decrease the size of the results window
 	vim.keymap.set("n", "gd", function()
 		require("telescope.builtin").lsp_definitions({
 			layout_strategy = "vertical",
@@ -51,7 +48,6 @@ local on_attach = function(client, bufnr)
 	vim.keymap.set("n", "<space>D", vim.lsp.buf.type_definition, bufopts)
 	vim.keymap.set("n", "<space>rn", vim.lsp.buf.rename, bufopts)
 	vim.keymap.set("n", "<space>ca", vim.lsp.buf.code_action, bufopts)
-	-- vim.keymap.set("n", "gr", vim.lsp.buf.references, bufopts)
 	vim.keymap.set("n", "gr", function()
 		require("telescope.builtin").lsp_references({
 			layout_strategy = "vertical",
@@ -73,12 +69,19 @@ local lsp_flags = {
 }
 
 -- Linter Configuration
-local filetypes = { "javascript", "javascriptreact", "typescript", "typescriptreact" }
-local linter = { "eslint_d" }
+local jsFiles = { "javascript", "javascriptreact", "typescript", "typescriptreact" }
+local jsLinter = { "eslint_d" }
 local ft_configs = {}
 
-for _, value in pairs(filetypes) do
-	ft_configs[value] = linter
+local phpFiles = { "php" }
+local phpLinter = { "phpstan" }
+
+for _, value in pairs(jsFiles) do
+	ft_configs[value] = jsLinter
+end
+
+for _, value in pairs(phpFiles) do
+	ft_configs[value] = phpLinter
 end
 
 require("lint").linters_by_ft = ft_configs
@@ -90,6 +93,7 @@ require("conform").setup({
 		typescript = { "prettierd" },
 		typescriptreact = { "prettierd" },
 		lua = { "stylua" },
+		php = { "pint" },
 	},
 	format_on_save = {
 		timeout_ms = 500,
@@ -114,12 +118,14 @@ local servers = {
 	"tsserver",
 	"rust_analyzer",
 	"intelephense",
+	"gopls",
 	"yamlls",
 	"hls",
 	"bashls",
 	"tailwindcss",
 	"clangd",
 }
+
 for _, lsp in ipairs(servers) do
 	require("lspconfig")[lsp].setup({
 		on_attach = on_attach,
@@ -128,11 +134,12 @@ for _, lsp in ipairs(servers) do
 	})
 end
 
--- Special configuration for lua_ls
-require("lspconfig")["lua_ls"].setup({
-	on_attach = on_attach,
+require("lspconfig").lua_ls.setup({
 	settings = {
 		Lua = {
+			completion = {
+				callSnippet = "Replace",
+			},
 			diagnostics = {
 				globals = { "vim" },
 			},

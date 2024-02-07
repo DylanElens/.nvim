@@ -101,6 +101,19 @@ local plugins = {
 			vim.keymap.set("n", "<C-Space>", nvim_tmux_nav.NvimTmuxNavigateNext)
 		end,
 	},
+	{
+		"jackMort/ChatGPT.nvim",
+		config = function()
+			require("chatgpt").setup()
+		end,
+		dependencies = {
+			"MunifTanjim/nui.nvim",
+			"nvim-lua/plenary.nvim",
+			"folke/trouble.nvim",
+			"nvim-telescope/telescope.nvim",
+		},
+	},
+	{ "folke/neodev.nvim", opts = {} },
 }
 
 require("lazy").setup(plugins, {})
