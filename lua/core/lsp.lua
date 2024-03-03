@@ -73,12 +73,19 @@ local lsp_flags = {
 }
 
 -- Linter Configuration
-local filetypes = { "javascript", "javascriptreact", "typescript", "typescriptreact" }
-local linter = { "eslint_d" }
+local jsfiletypes = { "javascript", "javascriptreact", "typescript", "typescriptreact" }
+local jslinter = { "eslint_d" }
 local ft_configs = {}
 
-for _, value in pairs(filetypes) do
-	ft_configs[value] = linter
+local phpFiletypes = { "php" }
+local phplinter = { "phpstan" }
+
+for _, value in pairs(phpFiletypes) do
+	ft_configs[value] = phplinter
+end
+
+for _, value in pairs(jsfiletypes) do
+	ft_configs[value] = jslinter
 end
 
 require("lint").linters_by_ft = ft_configs
@@ -90,6 +97,7 @@ require("conform").setup({
 		typescript = { "prettierd" },
 		typescriptreact = { "prettierd" },
 		lua = { "stylua" },
+		php = { "pint" },
 	},
 	format_on_save = {
 		timeout_ms = 500,
