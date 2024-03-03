@@ -1,35 +1,18 @@
 -- Setup Mason and Mason LSP Config
 require("mason").setup()
 require("mason-lspconfig").setup()
+require("neodev").setup()
 
--- Setup nvim-navic
 local navic = require("nvim-navic")
 
--- Keymap Options
-local opts = { noremap = true, silent = true }
-
--- Diagnostic keymaps
-vim.keymap.set("n", "<space>e", vim.diagnostic.open_float, opts)
-vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, opts)
-vim.keymap.set("n", "]d", vim.diagnostic.goto_next, opts)
-vim.keymap.set("n", "<space>q", vim.diagnostic.setloclist, opts)
-
--- LSP on_attach function
 local on_attach = function(client, bufnr)
-	vim.api.nvim_buf_set_option(bufnr, "omnifunc", "v:lua.vim.lsp.omnifunc")
-
-	if client.name ~= "null-ls" then
-		navic.attach(client, bufnr)
-	end
-
 	local bufopts = { noremap = true, silent = true, buffer = bufnr }
 
-	-- LSP keymaps
+	vim.api.nvim_buf_set_option(bufnr, "omnifunc", "v:lua.vim.lsp.omnifunc")
+
+	navic.attach(client, bufnr)
+
 	vim.keymap.set("n", "gD", vim.lsp.buf.declaration, bufopts)
-	-- vim.keymap.set("n", "gd", vim.lsp.buf.definition, bufopts)
-	-- // I want to see a big preview
-	-- use telescope for definition if there are multiple results
-	-- decrease the size of the results window
 	vim.keymap.set("n", "gd", function()
 		require("telescope.builtin").lsp_definitions({
 			layout_strategy = "vertical",
@@ -51,7 +34,6 @@ local on_attach = function(client, bufnr)
 	vim.keymap.set("n", "<space>D", vim.lsp.buf.type_definition, bufopts)
 	vim.keymap.set("n", "<space>rn", vim.lsp.buf.rename, bufopts)
 	vim.keymap.set("n", "<space>ca", vim.lsp.buf.code_action, bufopts)
-	-- vim.keymap.set("n", "gr", vim.lsp.buf.references, bufopts)
 	vim.keymap.set("n", "gr", function()
 		require("telescope.builtin").lsp_references({
 			layout_strategy = "vertical",
@@ -67,67 +49,28 @@ local on_attach = function(client, bufnr)
 	end, bufopts)
 end
 
--- LSP flags
 local lsp_flags = {
 	debounce_text_changes = 150,
 }
 
--- Linter Configuration
-local jsfiletypes = { "javascript", "javascriptreact", "typescript", "typescriptreact" }
-local jslinter = { "eslint_d" }
-local ft_configs = {}
-
-local phpFiletypes = { "php" }
-local phplinter = { "phpstan" }
-
-for _, value in pairs(phpFiletypes) do
-	ft_configs[value] = phplinter
-end
-
-for _, value in pairs(jsfiletypes) do
-	ft_configs[value] = jslinter
-end
-
-require("lint").linters_by_ft = ft_configs
-
--- Formatter Configuration
-require("conform").setup({
-	formatters_by_ft = {
-		javascript = { "prettierd" },
-		typescript = { "prettierd" },
-		typescriptreact = { "prettierd" },
-		lua = { "stylua" },
-		php = { "pint" },
-	},
-	format_on_save = {
-		timeout_ms = 500,
-		lsp_fallback = false,
-	},
-})
-
--- Auto commands for linting
-vim.api.nvim_create_autocmd({ "BufWritePost", "BufEnter" }, {
-	callback = function()
-		require("lint").try_lint()
-	end,
-})
-
--- Common capabilities for LSP servers
 local capabilities = require("cmp_nvim_lsp").default_capabilities(vim.lsp.protocol.make_client_capabilities())
 
--- LSP server configurations
 local servers = {
 	"pyright",
 	"volar",
 	"tsserver",
 	"rust_analyzer",
 	"intelephense",
+	"gopls",
 	"yamlls",
 	"hls",
 	"bashls",
 	"tailwindcss",
 	"clangd",
+	"jsonls",
+	"yamlls",
 }
+
 for _, lsp in ipairs(servers) do
 	require("lspconfig")[lsp].setup({
 		on_attach = on_attach,
@@ -136,11 +79,12 @@ for _, lsp in ipairs(servers) do
 	})
 end
 
--- Special configuration for lua_ls
-require("lspconfig")["lua_ls"].setup({
-	on_attach = on_attach,
+require("lspconfig").lua_ls.setup({
 	settings = {
 		Lua = {
+			completion = {
+				callSnippet = "Replace",
+			},
 			diagnostics = {
 				globals = { "vim" },
 			},
