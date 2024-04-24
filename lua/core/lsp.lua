@@ -69,6 +69,7 @@ local servers = {
 	"clangd",
 	"jsonls",
 	"yamlls",
+	-- "java_language_server",
 }
 
 for _, lsp in ipairs(servers) do
@@ -78,6 +79,16 @@ for _, lsp in ipairs(servers) do
 		capabilities = capabilities,
 	})
 end
+
+-- Separate setup for tsserver with custom node_modules path
+-- require("lspconfig").tsserver.setup({
+-- 	on_attach = on_attach,
+-- 	flags = lsp_flags,
+-- 	capabilities = capabilities,
+-- 	cmd_env = {
+-- 		NODE_PATH = "../../node_modules",
+-- 	},
+-- })
 
 require("lspconfig").lua_ls.setup({
 	settings = {
