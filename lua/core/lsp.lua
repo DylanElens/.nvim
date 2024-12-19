@@ -59,6 +59,7 @@ local servers = {
 	"pyright",
 	"volar",
 	"tsserver",
+	"cssls",
 	"rust_analyzer",
 	"intelephense",
 	"gopls",

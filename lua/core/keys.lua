@@ -18,6 +18,8 @@ vim.api.nvim_set_keymap("n", "<leader>4", "<cmd>lua require('harpoon.ui').nav_fi
 vim.api.nvim_set_keymap("n", "<leader>5", "<cmd>lua require('harpoon.ui').nav_file(5)<cr>", {})
 vim.api.nvim_set_keymap("n", "<leader>6", "<cmd>lua require('harpoon.ui').nav_file(6)<cr>", {})
 
+vim.api.nvim_set_keymap("n", "<leader>a", "<cmd>AvanteAsk<cr>", {})
+
 --toggle terminal
 vim.api.nvim_set_keymap("n", "<leader>td", "<cmd>lua _GOBANG_TOGGLE()<CR>", {})
 vim.api.nvim_set_keymap("n", "<leader>th", "<cmd>lua _HTOP_TOGGLE()<CR>", {})
