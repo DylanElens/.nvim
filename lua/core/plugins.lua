@@ -102,23 +102,24 @@ local plugins = {
 			vim.keymap.set("n", "<C-Space>", nvim_tmux_nav.NvimTmuxNavigateNext)
 		end,
 	},
-	{
-		"adalessa/laravel.nvim",
-		dependencies = {
-			"nvim-telescope/telescope.nvim",
-			"tpope/vim-dotenv",
-			"MunifTanjim/nui.nvim",
-			"nvimtools/none-ls.nvim",
-		},
-		cmd = { "Sail", "Artisan", "Composer", "Npm", "Yarn", "Laravel" },
-		keys = {
-			{ "<leader>la", ":Laravel artisan<cr>" },
-			{ "<leader>lr", ":Laravel routes<cr>" },
-			{ "<leader>lm", ":Laravel related<cr>" },
-		},
-		event = { "VeryLazy" },
-		config = true,
-	},
+    {
+      "adalessa/laravel.nvim",
+      dependencies = {
+        "tpope/vim-dotenv",
+        "nvim-telescope/telescope.nvim",
+        "MunifTanjim/nui.nvim",
+        "kevinhwang91/promise-async",
+      },
+      cmd = { "Laravel" },
+      keys = {
+        { "<leader>la", ":Laravel artisan<cr>" },
+        { "<leader>lr", ":Laravel routes<cr>" },
+        { "<leader>lm", ":Laravel related<cr>" },
+      },
+      event = { "VeryLazy" },
+      opts = {},
+      config = true,
+    },
 	{ "folke/neodev.nvim", opts = {} },
 	{
 		"CopilotC-Nvim/CopilotChat.nvim",
@@ -221,9 +222,7 @@ local plugins = {
     "stevearc/dressing.nvim",
     "nvim-lua/plenary.nvim",
     "MunifTanjim/nui.nvim",
-    --- The below dependencies are optional,
-    "nvim-tree/nvim-web-devicons", -- or echasnovski/mini.icons
-    "zbirenbaum/copilot.lua", -- for providers='copilot'
+    "nvim-tree/nvim-web-devicons",
     {
       -- support for image pasting
       "HakonHarnes/img-clip.nvim",
