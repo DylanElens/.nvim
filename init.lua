@@ -1,17 +1,22 @@
+-- Bootstrap lazy.nvim
 require("core.plugins")
-require("core.treesitter")
+
+-- Core settings
 require("core.options")
-require("core.lsp")
-require("core.completion")
-require("core.telescopes")
 require("core.keys")
 require("core.colorscheme")
-require("core.smartsplits")
+
+-- Features
+require("core.lsp")
+require("core.completion")
+require("core.treesitter")
+require("core.telescopes")
 require("core.bar")
+require("core.topbar")
+require("core.smartsplits")
 require("core.toggleterminal")
 require("core.lazygitstuff")
 require("core.navigation")
-require("core.topbar")
 require("core.tree")
 require("core.superalpha")
 require("core.formatters")
