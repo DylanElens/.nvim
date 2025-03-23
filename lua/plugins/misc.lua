@@ -39,9 +39,11 @@ return {
             { "<leader>lr", ":Laravel routes<cr>" },
             { "<leader>lm", ":Laravel related<cr>" },
         },
+        config = function()
+            require("laravel").setup()
+        end,
         event = { "VeryLazy" },
         opts = {},
-        config = true,
     },
     
     -- Blade template support
