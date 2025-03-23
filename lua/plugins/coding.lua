@@ -13,6 +13,16 @@ return {
     {
         "ThePrimeagen/harpoon",
         event = "VeryLazy",
+        keys = {
+            { "<leader>h", "<cmd>lua require('harpoon.ui').toggle_quick_menu()<cr>", desc = "Harpoon menu" },
+            { "<leader>af", "<cmd>lua require('harpoon.mark').add_file()<cr>", desc = "Add to harpoon" },
+            { "<leader>1", "<cmd>lua require('harpoon.ui').nav_file(1)<cr>", desc = "Harpoon file 1" },
+            { "<leader>2", "<cmd>lua require('harpoon.ui').nav_file(2)<cr>", desc = "Harpoon file 2" },
+            { "<leader>3", "<cmd>lua require('harpoon.ui').nav_file(3)<cr>", desc = "Harpoon file 3" },
+            { "<leader>4", "<cmd>lua require('harpoon.ui').nav_file(4)<cr>", desc = "Harpoon file 4" },
+            { "<leader>5", "<cmd>lua require('harpoon.ui').nav_file(5)<cr>", desc = "Harpoon file 5" },
+            { "<leader>6", "<cmd>lua require('harpoon.ui').nav_file(6)<cr>", desc = "Harpoon file 6" },
+        },
         dependencies = {
             "nvim-lua/plenary.nvim",
         },
@@ -65,6 +75,14 @@ return {
             },
             "mfussenegger/nvim-dap-python",
         },
+        keys = {
+            { "<leader>db", "<cmd>lua require'dap'.toggle_breakpoint()<CR>", desc = "Toggle breakpoint" },
+            { "<leader>dc", "<cmd>lua require'dap'.continue()<CR>", desc = "Continue" },
+            { "<leader>di", "<cmd>lua require'dap'.step_into()<CR>", desc = "Step into" },
+            { "<leader>do", "<cmd>lua require'dap'.step_over()<CR>", desc = "Step over" },
+            { "<leader>dr", "<cmd>lua require'dap'.repl.open()<CR>", desc = "Open REPL" },
+            { "<leader>dl", "<cmd>lua require'dap'.run_last()<CR>", desc = "Run last" },
+        },
         cmd = { 
             "DapToggleBreakpoint", 
             "DapContinue", 
@@ -80,6 +98,10 @@ return {
         "rcarriga/nvim-dap-ui",
         dependencies = {
             "mfussenegger/nvim-dap",
+        },
+        keys = {
+            { "<leader>du", "<cmd>lua require'dapui'.open()<CR>", desc = "Open DAP UI" },
+            { "<leader>dh", "<cmd>lua require'dapui'.eval()<CR>", mode = "v", desc = "Evaluate selection" },
         },
         cmd = { "DapUIToggle", "DapUIOpen", "DapUIClose" },
     },

@@ -12,8 +12,11 @@ end
 
 vim.opt.rtp:prepend(lazypath)
 
+vim.g.mapleader = ' '
+vim.opt.timeoutlen = 500
+
+
 require("lazy").setup({
-    -- Import all plugins from the plugins directory
     { import = "plugins" },
 }, {
     -- Lazy options here
