@@ -1,9 +1,6 @@
 vim.g.mapleader = ' '
 vim.opt.timeoutlen = 500
 
--- Avante key
-vim.api.nvim_set_keymap("n", "<leader>a", "<cmd>AvanteAsk<cr>", {})
-
 -- Copilot keys
 vim.api.nvim_set_keymap("n", "<leader>ct", "<cmd>Copilot enable<CR>", {})
 vim.api.nvim_set_keymap("n", "<leader>cf", "<cmd>Copilot disable<CR>", {})

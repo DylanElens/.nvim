@@ -1,4 +1,3 @@
--- Linter Configuration
 local jsFiles = { "javascript", "javascriptreact", "typescript", "typescriptreact" }
 local jsLinter = { "eslint_d" }
 local ft_configs = {}
