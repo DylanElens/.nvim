@@ -16,4 +16,13 @@ return {
 	{ "hrsh7th/cmp-path", lazy = true },
 	{ "hrsh7th/cmp-cmdline", lazy = true },
 	{ "saadparwaiz1/cmp_luasnip", lazy = true },
+	{
+		"supermaven-inc/supermaven-nvim",
+		config = function()
+			require("supermaven-nvim").setup({})
+		end,
+		keys = {
+			{ "<leader>st", "<cmd>SupermavenToggle<CR>", desc = "Toggle Supermaven" },
+		},
+	},
 }

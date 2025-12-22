@@ -14,9 +14,12 @@ return {
 			{ "<leader>fw", "<cmd>Telescope live_grep<cr>", desc = "Grep" },
 			{ "<leader>fb", "<cmd>Telescope buffers<cr>", desc = "Buffers" },
 			{ "<leader>fh", "<cmd>Telescope help_tags<cr>", desc = "Help Tags" },
+			{ "<leader>fj", "<cmd>Telescope jira<cr>", desc = "Jira Issues" },
 		},
 		config = function()
-			require("telescope").setup({
+			local telescope = require("telescope")
+
+			telescope.setup({
 				defaults = {
 					mappings = {
 						i = {
@@ -34,6 +37,11 @@ return {
 					},
 				},
 			})
+
+			pcall(telescope.load_extension, "fzf")
+			telescope.load_extension("jira")
+
+			require("jira").setup()
 		end,
 	},
 }

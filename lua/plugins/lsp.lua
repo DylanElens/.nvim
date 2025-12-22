@@ -6,79 +6,74 @@ return {
 			"SmiteshP/nvim-navic",
 			"mason-org/mason.nvim",
 			"mason-org/mason-lspconfig.nvim",
-			"folke/neodev.nvim",
 			"hrsh7th/cmp-nvim-lsp",
 		},
 		config = function()
-			require("neodev").setup()
-
 			local navic = require("nvim-navic")
+			local capabilities =
+				require("cmp_nvim_lsp").default_capabilities(vim.lsp.protocol.make_client_capabilities())
 
-			local on_attach = function(client, bufnr)
-				local attached_clients = vim.lsp.get_active_clients({ bufnr = bufnr })
-				for _, existing_client in ipairs(attached_clients) do
-					if existing_client.id ~= client.id and existing_client.name == client.name then
+			vim.api.nvim_create_autocmd("LspAttach", {
+				callback = function(args)
+					local bufnr = args.buf
+					local client = vim.lsp.get_client_by_id(args.data.client_id)
+					if not client then
 						return
 					end
-				end
 
-				local bufopts = { noremap = true, silent = true, buffer = bufnr }
+					local bufopts = { noremap = true, silent = true, buffer = bufnr }
 
-				vim.api.nvim_buf_set_option(bufnr, "omnifunc", "v:lua.vim.lsp.omnifunc")
+					if client.server_capabilities.documentSymbolProvider then
+						navic.attach(client, bufnr)
+					end
 
-				if client.server_capabilities.documentSymbolProvider then
-					navic.attach(client, bufnr)
-				end
+					vim.keymap.set("n", "gD", vim.lsp.buf.declaration, bufopts)
+					vim.keymap.set("n", "gd", function()
+						require("telescope.builtin").lsp_definitions({
+							layout_strategy = "vertical",
+							layout_config = {
+								width = 0.9,
+								height = 0.9,
+								prompt_position = "top",
+							},
+						})
+					end, bufopts)
 
-				vim.keymap.set("n", "gD", vim.lsp.buf.declaration, bufopts)
-				vim.keymap.set("n", "gd", function()
-					require("telescope.builtin").lsp_definitions({
-						layout_strategy = "vertical",
-						layout_config = {
-							width = 0.9,
-							height = 0.9,
-							prompt_position = "top",
-						},
-					})
-				end, bufopts)
+					vim.keymap.set("n", "gK", vim.lsp.buf.hover, bufopts)
+					vim.keymap.set("n", "gi", vim.lsp.buf.implementation, bufopts)
+					vim.keymap.set("n", "<C-k>", vim.lsp.buf.signature_help, bufopts)
+					vim.keymap.set("n", "<space>wa", vim.lsp.buf.add_workspace_folder, bufopts)
+					vim.keymap.set("n", "<space>wr", vim.lsp.buf.remove_workspace_folder, bufopts)
+					vim.keymap.set("n", "<space>wl", function()
+						print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
+					end, bufopts)
+					vim.keymap.set("n", "<space>D", vim.lsp.buf.type_definition, bufopts)
+					vim.keymap.set("n", "<space>rn", vim.lsp.buf.rename, bufopts)
+					vim.keymap.set("n", "<space>ca", vim.lsp.buf.code_action, bufopts)
+					vim.keymap.set("n", "gr", function()
+						require("telescope.builtin").lsp_references({
+							layout_strategy = "vertical",
+							layout_config = {
+								width = 0.9,
+								height = 0.9,
+								prompt_position = "top",
+							},
+						})
+					end, bufopts)
+					vim.keymap.set("n", "gl", function()
+						vim.diagnostic.open_float()
+					end, bufopts)
 
-				vim.keymap.set("n", "gK", vim.lsp.buf.hover, bufopts)
-				vim.keymap.set("n", "gi", vim.lsp.buf.implementation, bufopts)
-				vim.keymap.set("n", "<C-k>", vim.lsp.buf.signature_help, bufopts)
-				vim.keymap.set("n", "<space>wa", vim.lsp.buf.add_workspace_folder, bufopts)
-				vim.keymap.set("n", "<space>wr", vim.lsp.buf.remove_workspace_folder, bufopts)
-				vim.keymap.set("n", "<space>wl", function()
-					print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
-				end, bufopts)
-				vim.keymap.set("n", "<space>D", vim.lsp.buf.type_definition, bufopts)
-				vim.keymap.set("n", "<space>rn", vim.lsp.buf.rename, bufopts)
-				vim.keymap.set("n", "<space>ca", vim.lsp.buf.code_action, bufopts)
-				vim.keymap.set("n", "gr", function()
-					require("telescope.builtin").lsp_references({
-						layout_strategy = "vertical",
-						layout_config = {
-							width = 0.9,
-							height = 0.9,
-							prompt_position = "top",
-						},
-					})
-				end, bufopts)
-				vim.keymap.set("n", "gl", function()
-					vim.diagnostic.open_float()
-				end, bufopts)
+					vim.keymap.set("n", "<leader>ih", function()
+						vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({ bufnr = bufnr }), { bufnr = bufnr })
+					end, bufopts)
 
-				-- Toggle inlay hints
-				vim.keymap.set("n", "<leader>ih", function()
-					vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({ bufnr = bufnr }), { bufnr = bufnr })
-				end, bufopts)
+					if client.supports_method("textDocument/inlayHint") then
+						vim.lsp.inlay_hint.enable(false, { bufnr = bufnr })
+					end
+				end,
+			})
 
-				-- Enable inlay hints if the client supports it
-				if client.supports_method("textDocument/inlayHint") then
-					vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
-				end
-			end
-
-			-- Configure diagnostics globally (only once)
 			vim.diagnostic.config({
 				virtual_text = true,
 				signs = true,
@@ -95,75 +90,23 @@ return {
 				},
 			})
 
-			local lsp_flags = {
-				debounce_text_changes = 150,
-			}
-
-			local capabilities =
-				require("cmp_nvim_lsp").default_capabilities(vim.lsp.protocol.make_client_capabilities())
-
-			-- Track which servers have been set up to prevent duplicates
-			local setup_servers = {}
-
-			-- Server configurations with specific settings
 			local server_configs = {
 				pyright = {},
 				volar = {},
-				ts_ls = {
-					settings = {
-						typescript = {
-							inlayHints = {
-								includeInlayParameterNameHints = "all",
-								includeInlayParameterNameHintsWhenArgumentMatchesName = false,
-								includeInlayFunctionParameterTypeHints = true,
-								includeInlayVariableTypeHints = true,
-								includeInlayPropertyDeclarationTypeHints = true,
-								includeInlayFunctionLikeReturnTypeHints = true,
-								includeInlayEnumMemberValueHints = true,
-							},
-						},
-						javascript = {
-							inlayHints = {
-								includeInlayParameterNameHints = "all",
-								includeInlayParameterNameHintsWhenArgumentMatchesName = false,
-								includeInlayFunctionParameterTypeHints = true,
-								includeInlayVariableTypeHints = true,
-								includeInlayPropertyDeclarationTypeHints = true,
-								includeInlayFunctionLikeReturnTypeHints = true,
-								includeInlayEnumMemberValueHints = true,
-							},
-						},
-					},
-				},
+				ts_ls = {},
 				cssls = {},
 				rust_analyzer = {
 					settings = {
 						["rust-analyzer"] = {
 							inlayHints = {
-								bindingModeHints = {
-									enable = true,
-								},
-								chainingHints = {
-									enable = true,
-								},
-								closingBraceHints = {
-									enable = true,
-									minLines = 25,
-								},
-								closureReturnTypeHints = {
-									enable = "always",
-								},
-								lifetimeElisionHints = {
-									enable = "always",
-									useParameterNames = false,
-								},
+								bindingModeHints = { enable = true },
+								chainingHints = { enable = true },
+								closingBraceHints = { enable = true, minLines = 25 },
+								closureReturnTypeHints = { enable = "always" },
+								lifetimeElisionHints = { enable = "always", useParameterNames = false },
 								maxLength = 25,
-								parameterHints = {
-									enable = true,
-								},
-								reborrowHints = {
-									enable = "always",
-								},
+								parameterHints = { enable = true },
+								reborrowHints = { enable = "always" },
 								renderColons = true,
 								typeHints = {
 									enable = true,
@@ -198,46 +141,30 @@ return {
 				lua_ls = {
 					settings = {
 						Lua = {
-							completion = {
-								callSnippet = "Replace",
-							},
-							diagnostics = {
-								globals = { "vim" },
-							},
-							workspace = {
-								library = vim.api.nvim_get_runtime_file("", true),
-							},
-							telemetry = {
-								enable = false,
-							},
+							completion = { callSnippet = "Replace" },
+							diagnostics = { globals = { "vim" } },
+							workspace = { library = vim.api.nvim_get_runtime_file("", true) },
+							telemetry = { enable = false },
 						},
 					},
 				},
 				intelephense = {
 					settings = {
 						intelephense = {
-							files = {
-								maxSize = 1000000,
-							},
-							telemetry = {
-								enabled = false,
-							},
+							files = { maxSize = 1000000 },
+							telemetry = { enabled = false },
 						},
 					},
 				},
+				prismals = {},
 			}
 
 			for server_name, config in pairs(server_configs) do
-				if not setup_servers[server_name] then
-					local server_config = vim.tbl_deep_extend("force", {
-						on_attach = on_attach,
-						flags = lsp_flags,
-						capabilities = capabilities,
-					}, config)
-
-					require("lspconfig")[server_name].setup(server_config)
-					setup_servers[server_name] = true
-				end
+				local server_config = vim.tbl_deep_extend("force", {
+					capabilities = capabilities,
+				}, config)
+				vim.lsp.config(server_name, server_config)
+				vim.lsp.enable(server_name)
 			end
 		end,
 	},
@@ -266,15 +193,10 @@ return {
 				ensure_installed = {},
 				automatic_installation = false,
 				automatic_setup = false,
-				automatic_enable = false, -- Prevent duplicate LSP attachments
+				automatic_enable = false,
 				handlers = nil,
 			})
 		end,
-	},
-
-	{
-		"folke/neodev.nvim",
-		opts = {},
 	},
 
 	{
@@ -283,6 +205,7 @@ return {
 		config = function()
 			require("lint").linters_by_ft = {
 				php = { "phpstan", "php" },
+				lua = { "selene" },
 			}
 
 			vim.api.nvim_create_autocmd({ "BufWritePost", "BufEnter" }, {
