@@ -158,6 +158,22 @@ function M.setup()
 			end
 		end)
 	end, { desc = "Test Jira connection" })
+
+	vim.api.nvim_create_user_command("JiraSprint", function(opts)
+		local project = opts.args ~= "" and opts.args or nil
+		picker.sprint_issues({ project = project })
+	end, {
+		nargs = "?",
+		desc = "Open Jira sprint picker",
+	})
+
+	vim.api.nvim_create_user_command("JiraView", function(opts)
+		local issue_key = opts.args ~= "" and opts.args or nil
+		picker.view_issue(issue_key)
+	end, {
+		nargs = "?",
+		desc = "View Jira ticket in vsplit",
+	})
 end
 
 return M

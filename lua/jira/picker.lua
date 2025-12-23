@@ -29,69 +29,124 @@ local function entry_maker(issue)
 	}
 end
 
+local function safe_name(obj, fallback)
+	if type(obj) == "table" and obj.name then
+		return obj.name
+	end
+	return fallback
+end
+
+local function safe_display(obj, fallback)
+	if type(obj) == "table" and obj.displayName then
+		return obj.displayName
+	end
+	return fallback
+end
+
+local function render_issue_lines(issue)
+	local lines = {}
+	table.insert(lines, "# " .. issue.key .. ": " .. issue.fields.summary)
+	table.insert(lines, "")
+	table.insert(lines, "**Status:** " .. safe_name(issue.fields.status, "Unknown"))
+	table.insert(lines, "**Type:** " .. safe_name(issue.fields.issuetype, "Unknown"))
+	table.insert(lines, "**Assignee:** " .. safe_display(issue.fields.assignee, "Unassigned"))
+	table.insert(lines, "**Reporter:** " .. safe_display(issue.fields.reporter, "Unknown"))
+	table.insert(lines, "**Priority:** " .. safe_name(issue.fields.priority, "None"))
+	table.insert(lines, "**Created:** " .. utils.format_date(issue.fields.created))
+	table.insert(lines, "**Updated:** " .. utils.format_date(issue.fields.updated))
+	table.insert(lines, "")
+	table.insert(lines, "## Description")
+	table.insert(lines, "")
+
+	local description = utils.adf_to_text(issue.fields.description)
+	if description ~= "" then
+		for line in description:gmatch("[^\n]+") do
+			table.insert(lines, line)
+		end
+	else
+		table.insert(lines, "_No description_")
+	end
+
+	local checklist = utils.parse_checklist(issue.fields.customfield_10988)
+	if #checklist > 0 then
+		table.insert(lines, "")
+		table.insert(lines, "## Acceptance Criteria")
+		table.insert(lines, "")
+		for _, cl in ipairs(utils.format_checklist(checklist)) do
+			table.insert(lines, cl)
+		end
+	end
+
+	return lines, #checklist == 0
+end
+
+local function render_issue_to_buffer(issue, bufnr)
+	local lines, needs_checklist = render_issue_lines(issue)
+	vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, lines)
+	vim.api.nvim_set_option_value("filetype", "markdown", { buf = bufnr })
+	vim.api.nvim_set_option_value("buftype", "nofile", { buf = bufnr })
+	vim.api.nvim_set_option_value("modifiable", false, { buf = bufnr })
+	vim.api.nvim_buf_set_name(bufnr, "jira://" .. issue.key)
+
+	if needs_checklist then
+		api.get_checklist(issue.key, function(_, checklist_str)
+			if not checklist_str or not vim.api.nvim_buf_is_valid(bufnr) then
+				return
+			end
+			local prop_checklist = utils.parse_checklist_property(checklist_str)
+			if #prop_checklist > 0 then
+				local extra = { "", "## Acceptance Criteria", "" }
+				for _, cl in ipairs(utils.format_checklist(prop_checklist)) do
+					table.insert(extra, cl)
+				end
+				vim.api.nvim_set_option_value("modifiable", true, { buf = bufnr })
+				vim.api.nvim_buf_set_lines(bufnr, -1, -1, false, extra)
+				vim.api.nvim_set_option_value("modifiable", false, { buf = bufnr })
+			end
+		end)
+	end
+
+	api.get_comments(issue.key, function(_, comments)
+		if not comments or #comments == 0 or not vim.api.nvim_buf_is_valid(bufnr) then
+			return
+		end
+		local comment_lines = { "", "## Comments", "" }
+		for i = #comments, 1, -1 do
+			local comment = comments[i]
+			local author = "Unknown"
+			if type(comment.author) == "table" and comment.author.displayName then
+				author = comment.author.displayName
+			end
+			local date = utils.format_date(comment.created or "")
+			table.insert(comment_lines, "**" .. author .. "** - " .. date)
+			local body = utils.adf_to_text(comment.body)
+			if body ~= "" then
+				for line in body:gmatch("[^\n]+") do
+					table.insert(comment_lines, "> " .. line)
+				end
+			end
+			table.insert(comment_lines, "")
+		end
+		vim.api.nvim_set_option_value("modifiable", true, { buf = bufnr })
+		vim.api.nvim_buf_set_lines(bufnr, -1, -1, false, comment_lines)
+		vim.api.nvim_set_option_value("modifiable", false, { buf = bufnr })
+	end)
+end
+
 local function create_previewer()
 	return previewers.new_buffer_previewer({
 		title = "Issue Details",
 		define_preview = function(self, entry)
 			local issue = entry.value
 			local bufnr = self.state.bufnr
-			local lines = {}
-
-			local function safe_name(obj, fallback)
-				if type(obj) == "table" and obj.name then
-					return obj.name
-				end
-				return fallback
-			end
-			local function safe_display(obj, fallback)
-				if type(obj) == "table" and obj.displayName then
-					return obj.displayName
-				end
-				return fallback
-			end
-
-			table.insert(lines, "# " .. issue.key .. ": " .. issue.fields.summary)
-			table.insert(lines, "")
-			table.insert(lines, "**Status:** " .. safe_name(issue.fields.status, "Unknown"))
-			table.insert(lines, "**Type:** " .. safe_name(issue.fields.issuetype, "Unknown"))
-			table.insert(lines, "**Assignee:** " .. safe_display(issue.fields.assignee, "Unassigned"))
-			table.insert(lines, "**Reporter:** " .. safe_display(issue.fields.reporter, "Unknown"))
-			table.insert(lines, "**Priority:** " .. safe_name(issue.fields.priority, "None"))
-			table.insert(lines, "**Created:** " .. utils.format_date(issue.fields.created))
-			table.insert(lines, "**Updated:** " .. utils.format_date(issue.fields.updated))
-			table.insert(lines, "")
-			table.insert(lines, "## Description")
-			table.insert(lines, "")
-
-			local description = utils.adf_to_text(issue.fields.description)
-			if description ~= "" then
-				for line in description:gmatch("[^\n]+") do
-					table.insert(lines, line)
-				end
-			else
-				table.insert(lines, "_No description_")
-			end
-
-			local checklist = utils.parse_checklist(issue.fields.customfield_10988)
-			if #checklist > 0 then
-				table.insert(lines, "")
-				table.insert(lines, "## Acceptance Criteria")
-				table.insert(lines, "")
-				local checklist_lines = utils.format_checklist(checklist)
-				for _, line in ipairs(checklist_lines) do
-					table.insert(lines, line)
-				end
-			end
+			local lines, needs_checklist = render_issue_lines(issue)
 
 			vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, lines)
 			vim.api.nvim_set_option_value("filetype", "markdown", { buf = bufnr })
 
-			if #checklist == 0 then
+			if needs_checklist then
 				api.get_checklist(issue.key, function(_, checklist_str)
-					if not checklist_str then
-						return
-					end
-					if not vim.api.nvim_buf_is_valid(bufnr) then
+					if not checklist_str or not vim.api.nvim_buf_is_valid(bufnr) then
 						return
 					end
 					local prop_checklist = utils.parse_checklist_property(checklist_str)
@@ -104,6 +159,30 @@ local function create_previewer()
 					end
 				end)
 			end
+
+			api.get_comments(issue.key, function(_, comments)
+				if not comments or #comments == 0 or not vim.api.nvim_buf_is_valid(bufnr) then
+					return
+				end
+				local comment_lines = { "", "## Comments", "" }
+				for i = #comments, 1, -1 do
+					local comment = comments[i]
+					local author = "Unknown"
+					if type(comment.author) == "table" and comment.author.displayName then
+						author = comment.author.displayName
+					end
+					local date = utils.format_date(comment.created or "")
+					table.insert(comment_lines, "**" .. author .. "** - " .. date)
+					local body = utils.adf_to_text(comment.body)
+					if body ~= "" then
+						for line in body:gmatch("[^\n]+") do
+							table.insert(comment_lines, "> " .. line)
+						end
+					end
+					table.insert(comment_lines, "")
+				end
+				vim.api.nvim_buf_set_lines(bufnr, -1, -1, false, comment_lines)
+			end)
 		end,
 	})
 end
@@ -218,15 +297,33 @@ local function action_create_branch(prompt_bufnr)
 end
 
 ---@param prompt_bufnr number
-local function action_yank_key(prompt_bufnr)
+local function action_yank_preview(prompt_bufnr)
+	local picker = action_state.get_current_picker(prompt_bufnr)
+	if not picker or not picker.previewer then
+		return
+	end
+	local previewer = picker.previewer
+	if previewer.state and previewer.state.bufnr and vim.api.nvim_buf_is_valid(previewer.state.bufnr) then
+		local lines = vim.api.nvim_buf_get_lines(previewer.state.bufnr, 0, -1, false)
+		local content = table.concat(lines, "\n")
+		vim.fn.setreg("+", content)
+		vim.notify("Yanked preview (" .. #lines .. " lines)", vim.log.levels.INFO)
+	end
+end
+
+---@param prompt_bufnr number
+local function action_open_vsplit(prompt_bufnr)
 	local entry = action_state.get_selected_entry()
 	if not entry then
 		return
 	end
-
 	local issue = entry.value
-	vim.fn.setreg("+", issue.key)
-	vim.notify("Yanked: " .. issue.key, vim.log.levels.INFO)
+	actions.close(prompt_bufnr)
+
+	local bufnr = vim.api.nvim_create_buf(false, true)
+	vim.cmd("vsplit")
+	vim.api.nvim_win_set_buf(0, bufnr)
+	render_issue_to_buffer(issue, bufnr)
 end
 
 ---@param opts? table
@@ -269,12 +366,111 @@ function M.issues(opts)
 					map("n", "<C-c>", action_add_comment)
 					map("i", "<C-b>", action_create_branch)
 					map("n", "<C-b>", action_create_branch)
-					map("i", "<C-y>", action_yank_key)
-					map("n", "<C-y>", action_yank_key)
+					map("i", "<C-y>", action_yank_preview)
+					map("n", "<C-y>", action_yank_preview)
+					map("i", "<C-o>", action_open_vsplit)
+					map("n", "<C-o>", action_open_vsplit)
 					return true
 				end,
 			})
 			:find()
+	end)
+end
+
+---@param opts? {project?: string}
+function M.sprint_issues(opts)
+	opts = opts or {}
+
+	local ok, err = config.validate()
+	if not ok then
+		vim.notify("Jira: " .. (err or "Invalid config"), vim.log.levels.ERROR)
+		return
+	end
+
+	local project = opts.project
+	if not project then
+		local ticket = utils.get_current_ticket()
+		if ticket then
+			project = ticket:match("^([A-Z]+)")
+		end
+	end
+
+	local title = "Sprint Issues"
+	if project then
+		title = title .. " (" .. project .. ")"
+	end
+
+	vim.notify("Loading sprint issues...", vim.log.levels.INFO)
+
+	api.get_sprint_issues(project, function(api_err, issues)
+		if api_err then
+			vim.notify("Jira: " .. api_err.message, vim.log.levels.ERROR)
+			return
+		end
+
+		if not issues or #issues == 0 then
+			vim.notify("No sprint issues found", vim.log.levels.INFO)
+			return
+		end
+
+		pickers
+			.new(opts, {
+				prompt_title = title,
+				finder = finders.new_table({
+					results = issues,
+					entry_maker = entry_maker,
+				}),
+				sorter = conf.generic_sorter(opts),
+				previewer = create_previewer(),
+				attach_mappings = function(prompt_bufnr, map)
+					actions.select_default:replace(action_open_browser)
+					map("i", "<C-t>", action_log_time)
+					map("n", "<C-t>", action_log_time)
+					map("i", "<C-c>", action_add_comment)
+					map("n", "<C-c>", action_add_comment)
+					map("i", "<C-b>", action_create_branch)
+					map("n", "<C-b>", action_create_branch)
+					map("i", "<C-y>", action_yank_preview)
+					map("n", "<C-y>", action_yank_preview)
+					map("i", "<C-o>", action_open_vsplit)
+					map("n", "<C-o>", action_open_vsplit)
+					return true
+				end,
+			})
+			:find()
+	end)
+end
+
+---@param issue_key? string
+function M.view_issue(issue_key)
+	local ok, err = config.validate()
+	if not ok then
+		vim.notify("Jira: " .. (err or "Invalid config"), vim.log.levels.ERROR)
+		return
+	end
+
+	issue_key = issue_key or utils.get_current_ticket()
+	if not issue_key then
+		vim.notify("No ticket specified and couldn't detect from branch", vim.log.levels.ERROR)
+		return
+	end
+
+	vim.notify("Loading " .. issue_key .. "...", vim.log.levels.INFO)
+
+	api.get_issue(issue_key, function(api_err, issue)
+		if api_err then
+			vim.notify("Jira: " .. api_err.message, vim.log.levels.ERROR)
+			return
+		end
+		if not issue then
+			vim.notify("Issue not found", vim.log.levels.ERROR)
+			return
+		end
+
+		local bufnr = vim.api.nvim_create_buf(false, true)
+		vim.cmd("vsplit")
+		vim.api.nvim_win_set_buf(0, bufnr)
+		render_issue_to_buffer(issue, bufnr)
 	end)
 end
 

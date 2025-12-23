@@ -60,25 +60,100 @@ function M.adf_to_text(adf)
 		return ""
 	end
 
-	local lines = {}
+	local result = {}
 
-	local function extract_text(content)
-		for _, node in ipairs(content) do
-			if node.type == "text" and node.text then
-				table.insert(lines, node.text)
-			elseif node.type == "paragraph" and node.content then
-				extract_text(node.content)
-				table.insert(lines, "")
+	local function get_text(node)
+		if node.type == "text" then
+			local text = node.text or ""
+			if node.marks then
+				for _, mark in ipairs(node.marks) do
+					if mark.type == "strong" then
+						text = "**" .. text .. "**"
+					elseif mark.type == "em" then
+						text = "_" .. text .. "_"
+					elseif mark.type == "code" then
+						text = "`" .. text .. "`"
+					elseif mark.type == "link" and mark.attrs and mark.attrs.href then
+						text = "[" .. text .. "](" .. mark.attrs.href .. ")"
+					end
+				end
+			end
+			return text
+		end
+		return ""
+	end
+
+	local function process_inline(content)
+		local parts = {}
+		for _, node in ipairs(content or {}) do
+			if node.type == "text" then
+				table.insert(parts, get_text(node))
 			elseif node.type == "hardBreak" then
-				table.insert(lines, "")
+				table.insert(parts, "\n")
+			elseif node.type == "mention" and node.attrs then
+				table.insert(parts, "@" .. (node.attrs.text or "user"))
 			elseif node.content then
-				extract_text(node.content)
+				table.insert(parts, process_inline(node.content))
+			end
+		end
+		return table.concat(parts)
+	end
+
+	local function process_node(node, indent)
+		indent = indent or ""
+		if node.type == "paragraph" then
+			table.insert(result, indent .. process_inline(node.content))
+		elseif node.type == "heading" then
+			local level = node.attrs and node.attrs.level or 1
+			local prefix = string.rep("#", level) .. " "
+			table.insert(result, prefix .. process_inline(node.content))
+		elseif node.type == "bulletList" then
+			for _, item in ipairs(node.content or {}) do
+				if item.type == "listItem" then
+					for i, child in ipairs(item.content or {}) do
+						if i == 1 then
+							process_node(child, indent .. "- ")
+						else
+							process_node(child, indent .. "  ")
+						end
+					end
+				end
+			end
+		elseif node.type == "orderedList" then
+			local num = 1
+			for _, item in ipairs(node.content or {}) do
+				if item.type == "listItem" then
+					for i, child in ipairs(item.content or {}) do
+						if i == 1 then
+							process_node(child, indent .. num .. ". ")
+							num = num + 1
+						else
+							process_node(child, indent .. "   ")
+						end
+					end
+				end
+			end
+		elseif node.type == "codeBlock" then
+			local lang = node.attrs and node.attrs.language or ""
+			table.insert(result, "```" .. lang)
+			table.insert(result, process_inline(node.content))
+			table.insert(result, "```")
+		elseif node.type == "blockquote" then
+			for _, child in ipairs(node.content or {}) do
+				process_node(child, "> ")
+			end
+		elseif node.content then
+			for _, child in ipairs(node.content) do
+				process_node(child, indent)
 			end
 		end
 	end
 
-	extract_text(adf.content)
-	return table.concat(lines, "\n"):gsub("\n\n\n+", "\n\n")
+	for _, node in ipairs(adf.content) do
+		process_node(node)
+	end
+
+	return table.concat(result, "\n"):gsub("\n\n\n+", "\n\n")
 end
 
 ---@param iso_date string

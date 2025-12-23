@@ -32,10 +32,23 @@
 ---@field name string
 ---@field iconUrl? string
 
+---@class JiraAdfMark
+---@field type string
+---@field attrs? {href?: string, [string]: any}
+
+---@class JiraAdfAttrs
+---@field level? number
+---@field language? string
+---@field text? string
+---@field href? string
+---@field [string] any
+
 ---@class JiraAdfContent
 ---@field type string
 ---@field content? JiraAdfContent[]
 ---@field text? string
+---@field marks? JiraAdfMark[]
+---@field attrs? JiraAdfAttrs
 
 ---@class JiraAdf
 ---@field type string

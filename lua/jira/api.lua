@@ -109,6 +109,17 @@ function M.get_my_issues(callback)
 	M.search(jql, callback)
 end
 
+---@param project? string
+---@param callback fun(err: JiraError?, issues: JiraIssue[]?)
+function M.get_sprint_issues(project, callback)
+	local jql = "sprint in openSprints() AND assignee = currentUser() AND status != Done"
+	if project and project ~= "" then
+		jql = "project = " .. project .. " AND " .. jql
+	end
+	jql = jql .. " ORDER BY rank ASC"
+	M.search(jql, callback)
+end
+
 ---@param issue_key string
 ---@param callback fun(err: JiraError?, issue: JiraIssue?)
 function M.get_issue(issue_key, callback)
