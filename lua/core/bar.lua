@@ -3,7 +3,7 @@ local colors = {
 	bg = "#282828",
 	fg = "#ebdbb2",
 	yellow = "#d79921",
-	cyan = "#d3869b",
+	cyan = "#83a598",
 	darkblue = "#458588",
 	green = "#98971a",
 	orange = "#d65d0e",
@@ -96,7 +96,7 @@ ins_left({
 		return msg
 	end,
 	icon = " LSP:",
-	color = { fg = "#ffffff", gui = "bold" },
+	color = { fg = colors.fg, gui = "bold" },
 })
 
 ins_right({

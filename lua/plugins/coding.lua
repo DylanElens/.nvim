@@ -20,4 +20,5 @@ return {
 		"tpope/vim-dispatch",
 		cmd = { "Dispatch", "Make", "Focus", "Start" },
 	},
+	{ "blazkowolf/gruber-darker.nvim" },
 }
