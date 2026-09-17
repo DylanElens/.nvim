@@ -12,6 +12,7 @@ require("core.topbar")
 require("core.navigation")
 require("core.linters")
 require("core.quickfix").setup()
+-- require("ghost").setup()
 
 -- Note: The following configurations have been moved to plugin files:
 -- - treesitter → lua/plugins/treesitter.lua
